@@ -9,7 +9,8 @@ namespace ClickerConsole {
 
         public const ConsoleKey PressKey = ConsoleKey.N;
         public const ConsoleKey UpgradesKey = ConsoleKey.U;
-        public const ConsoleKey RebirthKey = ConsoleKey.R;
+        public const ConsoleKey RebirthDialogKey = ConsoleKey.R;
+        public const ConsoleKey RebirthKey = ConsoleKey.C;
 
         public delegate void KeyAction();
 
@@ -23,7 +24,8 @@ namespace ClickerConsole {
 
         private void initKeyActions() {
             KeyActions.Add(KeyType.Press, null);
-            KeyActions.Add(KeyType.Upgrades, null);
+            KeyActions.Add(KeyType.UpgradesDialog, null);
+            KeyActions.Add(KeyType.RebirthDialog, null);
             KeyActions.Add(KeyType.Rebirth, null);
             KeyActions.Add(KeyType.None, null);
         }
@@ -33,7 +35,9 @@ namespace ClickerConsole {
                 case PressKey:
                     return KeyType.Press;
                 case UpgradesKey:
-                    return KeyType.Upgrades;
+                    return KeyType.UpgradesDialog;
+                case RebirthDialogKey:
+                    return KeyType.RebirthDialog;
                 case RebirthKey:
                     return KeyType.Rebirth;
 
@@ -48,7 +52,8 @@ namespace ClickerConsole {
     enum KeyType {
         None,
         Press,
-        Upgrades,
+        UpgradesDialog,
+        RebirthDialog,
         Rebirth
     }
 }
