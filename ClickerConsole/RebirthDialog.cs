@@ -26,7 +26,7 @@ namespace ClickerConsole {
             DrawElement(2, 7, "Rebirth progress: ");
             DrawProgressBar(25, 7);
 
-            Console.SetCursorPosition(0, height + 1);
+            Console.SetCursorPosition(0, height);
         }
 
         private void DrawProgressBar(int x, int y) {

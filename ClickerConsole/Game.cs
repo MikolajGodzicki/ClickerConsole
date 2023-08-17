@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,6 +24,11 @@ namespace ClickerConsole {
             ContinueText("Make rebirths to get more and more multiplier!");
             */
 
+            _keyHandler = new KeyHandler();
+
+            _rebirthDialog = new RebirthDialog(60, 10);
+            _upgradesDialog = new UpgradesDialog(60, 5);
+
             init();
             MainLoop();
         }
@@ -30,15 +36,15 @@ namespace ClickerConsole {
             UpgradesDialog = false;
             RebirthDialog = false;
 
-            _keyHandler = new KeyHandler();
-
             _keyHandler.KeyActions[KeyType.Press] = PointManager.Instance.AddPoint;
             _keyHandler.KeyActions[KeyType.UpgradesDialog] = ToggleUpgradesDialog;
             _keyHandler.KeyActions[KeyType.RebirthDialog] = ToggleRebirthDialog;
             _keyHandler.KeyActions[KeyType.Rebirth] = PointManager.Instance.Rebirth;
 
-            _rebirthDialog = new RebirthDialog(60, 10);
-            _upgradesDialog = new UpgradesDialog(60, 20);
+            _keyHandler.UpgradeKeyActions[UpgradeKeyType.Upgrade1] = () => PointManager.Instance.BuyUpgrade(0);
+            _keyHandler.UpgradeKeyActions[UpgradeKeyType.Upgrade2] = () => PointManager.Instance.BuyUpgrade(1);
+            _keyHandler.UpgradeKeyActions[UpgradeKeyType.Upgrade3] = () => PointManager.Instance.BuyUpgrade(2);
+            _keyHandler.UpgradeKeyActions[UpgradeKeyType.Upgrade4] = () => PointManager.Instance.BuyUpgrade(3);
         }
 
         private void MainLoop() {
@@ -50,6 +56,13 @@ namespace ClickerConsole {
                 Console.Clear();
 
                 Console.WriteLine($"Points: {PointManager.Instance.Points}");
+
+                Console.WriteLine("[N] - Gather points");
+                Console.WriteLine("[R] - Open rebirth windows");
+                Console.WriteLine("[C] - Perform rebirth");
+                Console.WriteLine("[U] - Open upgrades windows");
+
+
                 KeyType inputKey = _keyHandler.GetKey(Console.ReadKey().Key);
                 _keyHandler.KeyActions[inputKey]?.Invoke();
 
@@ -63,22 +76,23 @@ namespace ClickerConsole {
                 return;
             }
 
+            CloseRebirthDialog();
             OpenUpgradesDialog();
         }
 
         private void OpenUpgradesDialog() {
-            if (UpgradesDialog) {
-                return;
-            }
-
             UpgradesDialog = true;
 
-            while (true) {
+            while (UpgradesDialog) {
                 Console.Clear();
 
                 _upgradesDialog.RenderDialog();
 
-                if (ValidateInputKey(KeyType.UpgradesDialog)) break;
+                ConsoleKey consoleKey = Console.ReadKey().Key;
+                ValidateInputKey(KeyType.UpgradesDialog, consoleKey);
+
+                UpgradeKeyType inputKey = _keyHandler.GetUpgradeKey(consoleKey);
+                _keyHandler.UpgradeKeyActions[inputKey]?.Invoke();
 
                 Console.Clear();
             }
@@ -86,31 +100,29 @@ namespace ClickerConsole {
 
         private void CloseUpgradesDialog() {
             UpgradesDialog = false;
+            Console.Clear();
         }
 
         private void ToggleRebirthDialog() {
-            if (RebirthDialog) { 
+            if (RebirthDialog) {
                 CloseRebirthDialog();
                 return;
             }
 
-            UpgradesDialog = false;
+            CloseUpgradesDialog();
             OpenRebirthDialog();
         }
 
         private void OpenRebirthDialog() {
-            if (RebirthDialog) {
-                return;
-            }
-
             RebirthDialog = true;
 
-            while (true) {
+            while (RebirthDialog) {
                 Console.Clear();
 
                 _rebirthDialog.RenderDialog();
 
-                if (ValidateInputKey(KeyType.RebirthDialog)) break;
+                ConsoleKey consoleKey = Console.ReadKey().Key;
+                ValidateInputKey(KeyType.RebirthDialog, consoleKey);
 
                 Console.Clear();
             }
@@ -118,10 +130,11 @@ namespace ClickerConsole {
 
         private void CloseRebirthDialog() {
             RebirthDialog = false;
+            Console.Clear();
         }
 
-        private bool ValidateInputKey(KeyType keyType) {
-            KeyType inputKey = _keyHandler.GetKey(Console.ReadKey().Key);
+        private bool ValidateInputKey(KeyType keyType, ConsoleKey key) {
+            KeyType inputKey = _keyHandler.GetKey(key);
             _keyHandler.KeyActions[inputKey]?.Invoke();
 
             if (inputKey == keyType) return true;

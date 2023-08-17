@@ -20,8 +20,10 @@ namespace ClickerConsole {
         public uint CurrentRebirth { get; private set; }
         public uint RebirthCost { get; private set; }
 
-        public uint UpgradesMultiplier { get; private set; }
+        public uint UpgradesMultiplier { get; set; }
         public uint RebirthMultiplier { get; private set; }
+
+        public List<Upgrade> Upgrades;
 
         public uint Points { get; private set; }
 
@@ -31,6 +33,17 @@ namespace ClickerConsole {
             RebirthCost = 128;
             UpgradesMultiplier = 1;
             RebirthMultiplier = 1;
+
+            Upgrades = InitUpgrades();
+        }
+
+        private List<Upgrade> InitUpgrades() {
+            return new List<Upgrade> {
+                new Upgrade(2, 100),
+                new Upgrade(4, 200),
+                new Upgrade(5, 900),
+                new Upgrade(10, 4000)
+            };
         }
 
         public void AddPoint() {
@@ -43,14 +56,23 @@ namespace ClickerConsole {
             Points--;
         }
 
+        public void RemovePoints(uint points) {
+            if (Points < points) return;
+
+            Points -= points;
+        }
+
         public void Rebirth() {
             if (Points < RebirthCost) return;
-
 
             Points = 0;
             CurrentRebirth++;
             RebirthCost *= 2;
             RebirthMultiplier *= 2;
+        }
+
+        public void BuyUpgrade(int idx) {
+            Upgrades[idx].BuyUpgrade();
         }
     }
 }

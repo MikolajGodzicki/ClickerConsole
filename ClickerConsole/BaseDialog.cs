@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ClickerConsole {
     internal class BaseDialog {
-        private char BorderChar = '#';
+        protected char BorderChar = '#';
 
         protected int width;
         protected int height;
@@ -23,12 +23,12 @@ namespace ClickerConsole {
         }
 
         protected void DrawVerticalLine() {
-            for (int i = 1; i < height + 1; i++) {
+            for (int i = 0; i < height; i++) {
                 Console.SetCursorPosition(0, i);
                 Console.Write(BorderChar);
                 Console.SetCursorPosition(width - 1, i);
                 Console.Write(BorderChar);
-                Console.SetCursorPosition(0, height);
+                Console.SetCursorPosition(0, height - 1);
             }
         }
 
